@@ -30,8 +30,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -97,22 +95,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this,R.raw.style_json));
 
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                //Location Permission already granted
-                startLocationUpdates();
-                //fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-                //mMap.setMyLocationEnabled(false);
-            } else {
-                //Request Location Permission
-                checkLocationPermission();
-            }
-        } else {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            //Location Permission already granted
             startLocationUpdates();
-            //fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-            //mMap.setMyLocationEnabled(false);
+        } else {
+            //Request Location Permission
+            checkLocationPermission();
         }
 
     }
@@ -120,7 +109,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onStart() {
         super.onStart();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
             startLocationUpdates();
         } else {
             checkLocationPermission();
@@ -146,13 +136,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
-//            List<Location> locationList = locationResult.getLocations();
-//            //Log.d(TAG, "onLocationResult: " + locationResult.getLastLocation());
-//            if (locationList.size() > 0) {
-//                //The last location in the list is the newest
-//                Location location = locationList.get(locationList.size() - 1);
-//                Log.i(TAG, "onLocationResult: " + location.getLatitude() + ", " + location.getLongitude());
-//                setUserLocationMarker(locationResult.getLastLocation());
             super.onLocationResult(locationResult);
             Log.d(TAG, "onLocationResult: " + locationResult.getLastLocation());
             if (mMap != null) {
@@ -181,18 +164,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
         }
 
-      /*  if (userLocationAccuracyCircle == null) {
-            CircleOptions circleOptions = new CircleOptions();
-            circleOptions.center(latLng);
-            circleOptions.strokeWidth(4);
-            circleOptions.strokeColor(Color.argb(255, 255, 0, 0));
-            circleOptions.fillColor(Color.argb(32, 255, 0, 0));
-            circleOptions.radius(location.getAccuracy());
-            userLocationAccuracyCircle = mMap.addCircle(circleOptions);
-        } else {
-            userLocationAccuracyCircle.setCenter(latLng);
-            userLocationAccuracyCircle.setRadius(location.getAccuracy());
-        }*/
     }
 
     @SuppressLint("MissingPermission")
@@ -240,20 +211,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    @SuppressLint("MissingSuperCall")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == REQUEST_CODE){
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // permission was granted
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
-                    //mMap.setMyLocationEnabled(true);
-                    //fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
                     startLocationUpdates();;
                 }
             } else {
